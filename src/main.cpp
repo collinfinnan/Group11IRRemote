@@ -35,7 +35,6 @@ const int receiver_pin = 5;
 /* Create the send and receive Objects */
 IRsend irsend(transmitter_pin);
 IRrecv irrecv(receiver_pin);
-decode_results results;
 uint32_t command;
 uint8_t len = 32; 
 
@@ -151,24 +150,4 @@ WiFiClient client = server.available();   // Listen for incoming clients
     Serial.println("Client disconnected.");
     Serial.println("");
   }
-  /* Send command to IRED via ESP32 
-  uint8_t len = 32; 
-  uint32_t command = PowerOn;
-  irsend.sendSAMSUNG(command, len); */
-
-  /* Receive any incoming IR 
-  if (irrecv.decode(&results)){
-    int value = results.value;
-    Serial.println(" ");
-    Serial.print("Code: "); 
-    Serial.println(results.value);
-    if(results.decode_type == SAMSUNG) {
-      Serial.println("Samsung!");
-    } else {
-      Serial.println("???");
-    }
-    Serial.println(" ");
-    irrecv.resume();
-    Serial.println("******");
-  } */
 }

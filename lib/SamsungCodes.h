@@ -1,4 +1,12 @@
-/* */
+/**
+ * IR Remote Control - Group 11
+ * Notre Dame Senior Design EE - Spring 2023
+ * SamsungCodes.h
+ * Objectives - 
+ *    Holds data for different Samsung commands
+ *    Data is sent via ESP32 to IR transmitter
+ * Date - 02/21/23
+ **/
 
 /* Constant Button Codes */
 #define PowerOn 0xE0E040BF;
