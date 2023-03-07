@@ -15,7 +15,7 @@
 #define RECV 1
 #define BAT 2
 #define SEND 3
-#define DEMOTYPE SEND
+#define DEMOTYPE RECV 
 
 /* Function Prototypes */
 void receiver_decode();
@@ -170,7 +170,7 @@ void receiver_decode() {
             Serial.println("UNKNOWN");
             break;
         }
-        Serial.printf("VALUE: %X\n\n", results.value);
+        Serial.printf("VALUE: %X", results.value);
         irrecv.resume();
     }
 }
