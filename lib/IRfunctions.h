@@ -51,7 +51,7 @@ bool battery_read()
   float voltage = (float)discrete_voltage / ESP32_ADC_scale * 3.3;
 
   /* Calculate % - Note, for 0.3 mA, the drop across transistor will be basically nothing */
-  float VTRANS = 0;
+  float VTRANS = 0.0;
   float R1 = 10000;
   float R2 = 10000;
   float voltage_calc = (ESP32_pin_voltage - VTRANS) * R2 / (R1 + R2);
@@ -67,9 +67,9 @@ bool battery_read()
   float power = voltage_off * voltage_off / (R2);
 
   /* Print results */
-  //Serial.printf("ON VOLTAGE: %f\nPERCENT: %f\nOFF POWER DISAPPATION: %f\n\n", voltage, percent, power);
+  Serial.printf("ON VOLTAGE: %f\nPERCENT: %f\nOFF POWER DISAPPATION: %f\n\n", voltage, percent, power);
   
-  if(percent > 0.9)
+  if(percent > 0.8)
   {
     return(true); 
   }
@@ -202,6 +202,7 @@ button button_record(const char *name)
 void button_send_custom(button b)
 {
   int nbits; 
+  delay(100); 
   if(!strcmp(b.protocol, "SAMSUNG"))
   {
     int count = 0; 
@@ -209,8 +210,9 @@ void button_send_custom(button b)
     while(count < 5 && b.data[count] != 0) 
     {
       irsend.sendSAMSUNG(b.data[count], nbits);
+      Serial.printf("DATA SENT: %"PRIx64"\n", b.data[count]);
       count++; 
-      delay(1000); 
+      delay(500); 
     }
   }
   else if(!strcmp(b.protocol, "NEC"))
@@ -221,12 +223,12 @@ void button_send_custom(button b)
     {
       irsend.sendNEC(b.data[count], nbits);
       count++; 
-      delay(1000); 
+      delay(500); 
     }
   } 
   else
   {
-    Serial.printf("Unknown protocol! Error!\n"); 
+    Serial.printf("Unknown protocol: %s! Error!\n", b.protocol); 
   }
 }
 
@@ -243,8 +245,9 @@ void button_send_custom(button b)
 */
 void button_send_default(char * protocol, int b)
 {
-  uint64_t data; 
+  unsigned long data; 
   int nbits; 
+  delay(100);
   switch(b)
   {
     case POWERON:
@@ -265,6 +268,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break; 
     }
     case POWEROFF:
     {
@@ -284,6 +288,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case VOLUMEDOWN:
     {
@@ -303,6 +308,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case VOLUMEUP:
     {
@@ -322,6 +328,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case ZERO:
     {
@@ -341,6 +348,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case ONE:
     {
@@ -360,6 +368,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case TWO:
     {
@@ -379,6 +388,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case THREE:
     {
@@ -398,6 +408,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case FOUR:
     {
@@ -417,6 +428,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case FIVE:
     {
@@ -436,6 +448,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case SIX:
     {
@@ -455,6 +468,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case SEVEN:
     {
@@ -474,6 +488,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case EIGHT:
     {
@@ -493,6 +508,7 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
     }
     case NINE:
     {
@@ -512,6 +528,127 @@ void button_send_default(char * protocol, int b)
       {
         Serial.printf("Unsupported protocol, unable to send!!!\n");
       }
+      break;
+    }
+    case ENTER:
+    {
+      if(!strcmp(protocol, "SAMSUNG"))
+      {
+        data = S_Enter; 
+        nbits = SAMSUNG_BITS; 
+        irsend.sendSAMSUNG(data, nbits); 
+      } 
+      else if(!strcmp(protocol, "NEC"))
+      {
+        data = NEC_Enter; 
+        nbits = NEC_BITS; 
+        irsend.sendNEC(data, nbits);
+      }
+      else
+      {
+        Serial.printf("Unsupported protocol, unable to send!!!\n");
+      }
+      break;
+    }
+    case UP:
+    {
+      if(!strcmp(protocol, "SAMSUNG"))
+      {
+        data = S_Up; 
+        nbits = SAMSUNG_BITS; 
+        irsend.sendSAMSUNG(data, nbits); 
+      } 
+      else if(!strcmp(protocol, "NEC"))
+      {
+        data = NEC_Up; 
+        nbits = NEC_BITS; 
+        irsend.sendNEC(data, nbits);
+      }
+      else
+      {
+        Serial.printf("Unsupported protocol, unable to send!!!\n");
+      }
+      break;
+    }
+    case DOWN:
+    {
+      if(!strcmp(protocol, "SAMSUNG"))
+      {
+        data = S_Down; 
+        nbits = SAMSUNG_BITS; 
+        irsend.sendSAMSUNG(data, nbits); 
+      } 
+      else if(!strcmp(protocol, "NEC"))
+      {
+        data = NEC_Down; 
+        nbits = NEC_BITS; 
+        irsend.sendNEC(data, nbits);
+      }
+      else
+      {
+        Serial.printf("Unsupported protocol, unable to send!!!\n");
+      }
+      break;
+    }
+    case LEFT:
+    {
+      if(!strcmp(protocol, "SAMSUNG"))
+      {
+        data = S_Left; 
+        nbits = SAMSUNG_BITS; 
+        irsend.sendSAMSUNG(data, nbits); 
+      } 
+      else if(!strcmp(protocol, "NEC"))
+      {
+        data = NEC_Left; 
+        nbits = NEC_BITS; 
+        irsend.sendNEC(data, nbits);
+      }
+      else
+      {
+        Serial.printf("Unsupported protocol, unable to send!!!\n");
+      }
+      break;
+    }
+    case RIGHT:
+    {
+      if(!strcmp(protocol, "SAMSUNG"))
+      {
+        data = S_Right; 
+        nbits = SAMSUNG_BITS; 
+        irsend.sendSAMSUNG(data, nbits); 
+      } 
+      else if(!strcmp(protocol, "NEC"))
+      {
+        data = NEC_Right; 
+        nbits = NEC_BITS; 
+        irsend.sendNEC(data, nbits);
+      }
+      else
+      {
+        Serial.printf("Unsupported protocol, unable to send!!!\n");
+      }
+      break;
+    }
+    case HOME:
+    {
+      if(!strcmp(protocol, "SAMSUNG"))
+      {
+        data = S_Home; 
+        nbits = SAMSUNG_BITS; 
+        irsend.sendSAMSUNG(data, nbits); 
+      } 
+      else if(!strcmp(protocol, "NEC"))
+      {
+        data = NEC_Home; 
+        nbits = NEC_BITS; 
+        irsend.sendNEC(data, nbits);
+      }
+      else
+      {
+        Serial.printf("Unsupported protocol, unable to send!!!\n");
+      }
+      break;
     }
     default:
     {

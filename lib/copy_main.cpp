@@ -423,11 +423,6 @@ void setup()
   }
   ESP_ERROR_CHECK(err);
 
-  strcpy(ssid, "SDNet"); 
-  strcpy(password, "CapstoneProject"); 
-
-  flash_write_str("ssid", ssid);
-  flash_write_str("password", password); 
   flash_read_str("ssid", ssid);
   flash_read_str("password", password);
 
@@ -474,8 +469,6 @@ void setup()
     int count = 0; 
     /* For Custom Button 1 */
     if (request->hasParam(PARAM_INPUT_4)) {
-      button_reset(p.number, 1); 
-      p = flash_read_profile(p.number);
       inputMessage = request->getParam(PARAM_INPUT_4)->value();
       strcpy(p.buttons[0].name, inputMessage.c_str());
       currentTime = millis(); 
@@ -498,8 +491,6 @@ void setup()
     /* For Custom Button 2 */
     else if (request->hasParam(PARAM_INPUT_5)) {
       inputMessage = request->getParam(PARAM_INPUT_5)->value();
-      button_reset(p.number, 2); 
-      p = flash_read_profile(p.number);
       strcpy(p.buttons[1].name, inputMessage.c_str());
       currentTime = millis(); 
       previousTime = currentTime;  
@@ -521,8 +512,6 @@ void setup()
     /* For Custom Button 3 */
     else if (request->hasParam(PARAM_INPUT_6)) {
       inputMessage = request->getParam(PARAM_INPUT_6)->value();
-      button_reset(p.number, 3); 
-      p = flash_read_profile(p.number);
       strcpy(p.buttons[2].name, inputMessage.c_str());
       currentTime = millis(); 
       previousTime = currentTime;  
@@ -726,15 +715,16 @@ void host_server(void)
 {
 
   /* Create access point WiFi connection and print IP */
-  WiFi.softAP("ESP32", "password");
+  WiFi.softAP(ap_ssid, ap_password);
   IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
   Serial.println(IP);
 
+  /* Create server and start it */
+  server.begin();
+
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-  {
-    request->send_P(200, "text/html", "Testing"); 
-  });
+            { request->send_P(200, "text/html", index_html); Serial.println("MADE IT HERE");});
 
   // Send a GET request to <ESP_IP>/get?input1=<inputMessage>
   server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -768,7 +758,7 @@ void host_server(void)
       finished_ssid = false; 
       finished_password = false; 
     }
-    request->send_P(200, "text/html", "Testing"); });
+    request->send_P(200, "text/html", index_html); });
   server.onNotFound(notFound);
   server.begin();
 }

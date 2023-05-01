@@ -485,7 +485,7 @@ void flash_write_profile(profile p)
   case 1:
   {
     flash_write_str("p1_name", p.name);
-    flash_write_str("p1_protocol", p.protocol);
+    flash_write_str("p1_protocol", p.protocol); 
     flash_write_button(1, 1, p.buttons[0]);
     flash_write_button(1, 2, p.buttons[1]);
     flash_write_button(1, 3, p.buttons[2]);
@@ -528,11 +528,12 @@ void profile_reset(int p_num)
 { 
 
     profile p; 
-    strcpy(p.name, ""); 
-    strcpy(p.protocol, ""); 
+    p.number = p_num; 
+    strcpy(p.name, "___"); 
+    strcpy(p.protocol, "___"); 
     button b_blank; 
-    strcpy(b_blank.name, ""); 
-    strcpy(b_blank.protocol, ""); 
+    strcpy(b_blank.name, "___"); 
+    strcpy(b_blank.protocol, "___"); 
     for(int i = 0; i < 5; i++)
     {
         b_blank.data[i] = 0; 
